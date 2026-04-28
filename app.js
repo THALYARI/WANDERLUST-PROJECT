@@ -35,7 +35,7 @@ main()
 
 
 async function main() {
-  await mongoose.connect(localdb);
+  await mongoose.connect(dbUrl);
 }
 
 
