@@ -19,19 +19,19 @@ router.get("/search", async (req, res) => {
     }
 
     // matched listings
-    const matched = await Listing.find({
-        title: { $regex: q, $options: "i" }
-    });
+    const matched = await Listing.find({ // mongo db operators  $regex → search inside text
+        title: { $regex: q, $options: "i" } // regex for pattern matching like (villa , Villa , beach villa etc) 
+    }); // option i => i is case - insensitive
 
     // remaining listings
     const others = await Listing.find({
-        title: { $not: { $regex: q, $options: "i" } }
+        title: { $not: { $regex: q, $options: "i" } } // $not = opposite
     });
 
     // combine → matched first
     const allListings = [...matched, ...others];
 
-    res.render("listings/index", { allListings});
+    res.render("listings/index", {allListings});
 });
 
 
