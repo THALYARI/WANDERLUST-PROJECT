@@ -11,6 +11,31 @@ const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 
 const listingController = require("../controllers/listings.js");
 
+router.get("/search", async (req, res) => {
+    let { q } = req.query;
+
+    if (!q) {
+        return res.redirect("/listings");
+    }
+
+    // matched listings
+    const matched = await Listing.find({
+        title: { $regex: q, $options: "i" }
+    });
+
+    // remaining listings
+    const others = await Listing.find({
+        title: { $not: { $regex: q, $options: "i" } }
+    });
+
+    // combine → matched first
+    const allListings = [...matched, ...others];
+
+    res.render("listings/index", { allListings});
+});
+
+
+
 
 // Edit route
 router.get(
