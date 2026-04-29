@@ -4,7 +4,7 @@ const wrapAsync = require("../utils/wrapAsync");
 const multer = require("multer") // this is for the form which is sending file so to decode it we use multer as its not url encoded
 const {storage} = require("../cloudConfig.js");
 const upload = multer({storage}) //  folder {storage} will store the received files from the form 
-
+// user uploads image -> multer handles file -> cloudinary uploads it -> cloudinary returns url + filename -> req.file gets path and filename as url and id respectively
 
 const Listing = require("../models/listing");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
