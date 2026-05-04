@@ -11,30 +11,8 @@ const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 
 const listingController = require("../controllers/listings.js");
 
-router.get("/search", async (req, res) => {
-    let { q } = req.query;
-
-    if (!q) {
-        return res.redirect("/listings");
-    }
-
-    // matched listings
-    const matched = await Listing.find({ // mongo db operators  $regex → search inside text
-        title: { $regex: q, $options: "i" } // regex for pattern matching like (villa , Villa , beach villa etc) 
-    }); // option i => i is case - insensitive
-
-    // remaining listings
-    const others = await Listing.find({
-        title: { $not: { $regex: q, $options: "i" } } // $not = opposite
-    });
-
-    // combine → matched first
-    const allListings = [...matched, ...others];
-
-    res.render("listings/index", {allListings});
-});
-
-
+// search route
+router.get("/search",wrapAsync(listingController.search));
 
 
 // Edit route

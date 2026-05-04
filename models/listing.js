@@ -27,10 +27,10 @@ const listingSchema = new Schema({
         ref : "User"
     }
 })
-
-listingSchema.post("findOneAndDelete",async(listing)=>{
-    if(listing){
-        await Review.deleteMany({_id : {$in: listing.reviews}});
+// post means -> run this AFTER the main operation finishes
+listingSchema.post("findOneAndDelete",async(listing)=>{ // After a listing is deleted, also delete all its reviews.”   async(listing) =>The document that was just deleted it gettes automatically passed to the middleware
+    if(listing){  // findOneAndDelete is findbyIdAndDelete 
+        await Review.deleteMany({_id : {$in: listing.reviews}});//take all review IDs inside listing delete them from Review collection
     }
 })
 

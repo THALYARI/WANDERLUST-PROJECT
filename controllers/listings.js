@@ -1,6 +1,27 @@
 const Listing = require("../models/listing")
 
 
+module.exports.search = async (req, res) => {
+    let { q } = req.query;
+
+    if (!q) {
+        req.flash("error","Enter Listing");
+        return res.redirect("/listings");
+    }
+
+    // matched listings
+    const matched = await Listing.find({ // mongo db operators  $regex → search inside text
+        title: { $regex: q, $options: "i" } // regex for pattern matching like (villa , Villa , beach villa etc) 
+    }); // option i => i is case - insensitive
+    
+    if(matched.length === 0){
+      req.flash("error", `${q} Listing not available`); // flash is stored in session and session belongs to req(request) and works properly with redirect because redirect creates a new request where flash messages are read and cleared
+      return res.redirect("/listings");
+    }
+    res.render("listings/index", {allListings : matched}); // allListings get matched values only i can also pass matched but in /index the name is allListings and i only want to use index not other ejs template // Passing matched listings to index.ejs as 'allListings'  (variable name must match what is used in the EJS file)
+}
+
+
 module.exports.index = async(req,res)=>{
     const allListings = await Listing.find({});
     res.render("listings/index.ejs",{allListings})
@@ -75,7 +96,7 @@ module.exports.updateListing = async(req,res)=>{
 
 module.exports.deleteListing = async(req,res)=>{
     let {id} = req.params;
-    await Listing.findByIdAndDelete(id);
+    await Listing.findByIdAndDelete(id); // also a post middleware is attached to findby id and delete ->in listings models
     req.flash("success","Listing Deleted");
     res.redirect("/listings");
 }
